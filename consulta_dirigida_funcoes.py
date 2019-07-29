@@ -182,16 +182,16 @@ def mostra_conteudo_clusters(cluster,n_amostras,respostas,it_aux):
             
     fo.close()
     
-
-def generate_csvs_for_powerbi(analise, Z, respostas, respostas_tratadas,it_aux):
+'''
+def generate_csvs_for_powerbi(analise, Z, perguntas_id, respostas, respostas_tratadas,it_aux):
     
     clusters = [i for i in range(1,len(analise)+1)]
     
     #Prepara a tabela que indica o número de perguntas por cluster
-    d={'cluster_id':clusters,'numero_de_respostas':analise}
+    d={'pergunta_id':perguntas_id,'cluster_id':clusters,'numero_de_respostas':analise}
     df = pd.DataFrame(d)
     #exporta a tabela para um csv
-    df.to_csv(str(it_aux) + 'info_cluster.csv',sep='|',index=False,encoding='utf-8')
+    df.to_csv('info_cluster.csv',sep='|',index=False,encoding='utf-8')
     
     '''
     #adiciona as keywords de cada cluster no csv
@@ -214,12 +214,23 @@ def generate_csvs_for_powerbi(analise, Z, respostas, respostas_tratadas,it_aux):
         #Adiciona a pergunta com processamento na coluna correspondente
         Z.iloc[i,3] = respostas_tratadas[idx]
         
-    Z.to_csv(str(it_aux) + 'texto_respostas_por_cluster.csv',sep='|',index=False,encoding='utf-8')
+    Z.to_csv('texto_respostas_por_cluster.csv',sep='|',index=False,encoding='utf-8')
+'''
+
+def generate_csvs_for_powerbi(analise, Z):
+    
+    
+    
+    with open('info_cluster', 'a') as f:
+        df.to_csv(f, header=False)
+    
+    
+    
     
 def generate_wordcloud(cluster,it_aux,stop_words):
     
     #importa o csv que tem a informação das clusters
-    df = pd.read_csv(str(it_aux) + 'texto_respostas_por_cluster.csv', sep='|')
+    df = pd.read_csv('texto_respostas_por_cluster.csv', sep='|')
     a = df[df['cluster_id'] == cluster]
     
     L = list(a.iloc[:,3])
