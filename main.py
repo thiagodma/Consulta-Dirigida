@@ -13,6 +13,7 @@ resposta_id = list(df['ID da resposta'])
 
 it=11 #indice da coluna que contém a resposta
 it_aux = 1 #será usado apenas para fazer referência às perguntas como primeira, segunda, terceira, etc
+analise = []
 while it < 58:
     
     #pega o primeiro conjunto de perguntas
@@ -62,16 +63,18 @@ while it < 58:
     id_clusters = hierarchy.fcluster(clusters_por_cosseno, limite_dissimilaridade, criterion="distance")
     
     #Tentando visualizar os dados e vendo o número de amostras por cluster
-    analise = cdf.analisa_clusters(base_tfidf, id_clusters)
+    analise.append(cdf.analisa_clusters(base_tfidf, id_clusters))
     
     #Colocando em dataframes
-    X = pd.DataFrame(id_clusters,columns=['cluster_id'])
-    Y = pd.DataFrame(resposta_id ,columns=['resposta_id'])
-    Z = X.join(Y)
+    W = pd.DataFrame([it_aux]*len(id_clusters),columns=['pergunta_id']) #codigo da pergunta
+    X = pd.DataFrame(id_clusters,columns=['cluster_id']) #codigo da cluster
+    Y = pd.DataFrame(resposta_id ,columns=['resposta_id']) #codigo da resposta
+    Z = W.join(X)
+    Z = Z.join(Y)
     
     print('Foram encontradas ' + str(max(Z['cluster_id'])) + ' clusters\n')
     
     #Exporta as tabelas
-    cdf.generate_csvs_for_powerbi(analise,Z,respostas,respostas_tratadas,it_aux)
+    cdf.generate_csvs_for_powerbi(analise[it_aux-1],Z,respostas,respostas_tratadas,it_aux)
     it = it+2
     it_aux = it_aux+1
