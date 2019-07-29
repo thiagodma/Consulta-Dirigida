@@ -6,6 +6,7 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
+from wordcloud import WordCloud
 
 
 #Pega stop_words e as trata para ficarem no formato correto
@@ -163,8 +164,8 @@ def stem(resolucoes):
         
     return res
 
-def mostra_conteudo_clusters(cluster,n_amostras,respostas):
-    df = pd.read_csv('texto_respostas_por_cluster.csv', sep='|')
+def mostra_conteudo_clusters(cluster,n_amostras,respostas,it_aux):
+    df = pd.read_csv(str(it_aux) + 'texto_respostas_por_cluster.csv', sep='|')
     a = df[df['cluster_id'] == cluster]
     
     if a.shape[0] >= n_amostras: mostra = a.sample(n_amostras,random_state = 42)
@@ -181,41 +182,8 @@ def mostra_conteudo_clusters(cluster,n_amostras,respostas):
             
     fo.close()
     
-def mostra_palavras_relevantes(cluster, perguntasx, n_palavras):
-    
-    #importa o csv que tem a informação das clusters
-    df = pd.read_csv('texto_respostas_por_cluster.csv', sep='|')
-    a = df[df['cluster_id'] == cluster]
-    
-    #importa as perguntas pertencentes à cluster
-    textos=[]
-    for i in range(a.shape[0]):
-        textos.append(perguntasx[int(a.iloc[i,1][1:])])
-    
-    #vetoriza para contar facilmente quantas vezes cada palavra aparece
-    vec = CountVectorizer()
-    bag_palavras = vec.fit_transform(textos)
-    feature_names = vec.get_feature_names()
-    
-    #Se apareceu apenas uma vez em uma pergunta já e suficiente
-    bag_palavras[bag_palavras>1] = 1
-    
-    #Computa o número de vezes que cada palavra apareceu
-    count = bag_palavras.sum(axis=0)
-    
-    #inicializa a variável de retorno
-    palavras_relevantes=[]
-    
-    #Coloca na variável de saída as palavras mais relevantes com a respectiva contagem
-    for i in range(n_palavras):
-       idx = count.argmax()
-       palavras_relevantes.append(feature_names[idx] + '-' + str(count[0,idx]))
-       count[0,idx] = -1
-    
-    return ' '.join(palavras_relevantes)
-    
 
-def generate_csvs_for_powerbi(analise, Z, respostas, respostas_tratadas):
+def generate_csvs_for_powerbi(analise, Z, respostas, respostas_tratadas,it_aux):
     
     clusters = [i for i in range(1,len(analise)+1)]
     
@@ -223,7 +191,7 @@ def generate_csvs_for_powerbi(analise, Z, respostas, respostas_tratadas):
     d={'cluster_id':clusters,'numero_de_respostas':analise}
     df = pd.DataFrame(d)
     #exporta a tabela para um csv
-    df.to_csv('info_cluster.csv',sep='|',index=False,encoding='utf-8')
+    df.to_csv(str(it_aux) + 'info_cluster.csv',sep='|',index=False,encoding='utf-8')
     
     '''
     #adiciona as keywords de cada cluster no csv
@@ -246,4 +214,27 @@ def generate_csvs_for_powerbi(analise, Z, respostas, respostas_tratadas):
         #Adiciona a pergunta com processamento na coluna correspondente
         Z.iloc[i,3] = respostas_tratadas[idx]
         
-    Z.to_csv('texto_respostas_por_cluster.csv',sep='|',index=False,encoding='utf-8')
+    Z.to_csv(str(it_aux) + 'texto_respostas_por_cluster.csv',sep='|',index=False,encoding='utf-8')
+    
+def generate_wordcloud(cluster,it_aux,stop_words):
+    
+    #importa o csv que tem a informação das clusters
+    df = pd.read_csv(str(it_aux) + 'texto_respostas_por_cluster.csv', sep='|')
+    a = df[df['cluster_id'] == cluster]
+    
+    L = list(a.iloc[:,3])
+    text = '\n'.join(L)
+    
+    
+    wordcloud = WordCloud(stopwords=stop_words.split()+['laboratorio','laboratorios','rdc']).generate(text)
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.show()
+    
+    
+    
+    
+    
+    
+    
+    
