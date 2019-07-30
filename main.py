@@ -16,7 +16,7 @@ resposta_id = list(df['ID da resposta'])
 it=11 #indice da coluna que contém a resposta
 it_aux = 1 #será usado apenas para fazer referência às perguntas como primeira, segunda, terceira, etc
 analise = []
-while it < 58:
+while it <= 58:
     
     #pega o primeiro conjunto de perguntas
     respostas = list(df.iloc[:,it])
@@ -55,8 +55,8 @@ while it < 58:
     print('Começou a clusterização.')
     t = time.time()
     clusters_por_cosseno = hierarchy.linkage(base_tfidf_reduced,"average", metric="cosine") #pode testar metric="euclidean" também
-    plt.figure()
-    dn = hierarchy.dendrogram(clusters_por_cosseno)
+    #plt.figure()
+    #dn = hierarchy.dendrogram(clusters_por_cosseno)
     elpsd = time.time() - t
     print('Tempo para fazer a clusterização: ' + str(elpsd) + '\n')
     
