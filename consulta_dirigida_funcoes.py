@@ -9,8 +9,10 @@ from sklearn.feature_extraction.text import CountVectorizer
 from wordcloud import WordCloud
 
 
-#Pega stop_words e as trata para ficarem no formato correto
 def define_stop_words():
+    '''
+    Pega stopwords de diferentes bibliotecas e as trata para ficarem no formato correto
+    '''
     
     stop_words = get_stop_words('portuguese')
     stop_words = stop_words + nltk.corpus.stopwords.words('portuguese')
@@ -25,6 +27,9 @@ def define_stop_words():
 
 
 def trata_respostas(texto, stop_words):
+    '''
+    Trata a respostas. Remove stopwords, sites, pontuacao, caracteres especiais etc. texto:str, stop_words:str
+    '''
     
     if texto=='nao teve resposta': return texto
     
@@ -59,8 +64,10 @@ def trata_respostas(texto, stop_words):
     return texto_limpo
     
     
-# Recodificacao em utf8, removendo cedilhas acentos e coisas de latin
-def limpa_utf8(texto):    
+def limpa_utf8(texto):
+    '''
+    Recodifica em utf-8. Remove cedilhas, acentos e coisas de latin
+    '''
 
     texto = texto.split()
     texto_tratado = []
@@ -75,6 +82,9 @@ def limpa_utf8(texto):
 
 def roman2num(roman, stop_words, values={'m': 1000, 'd': 500, 'c': 100, 'l': 50,
                                 'x': 10, 'v': 5, 'i': 1}):
+    '''
+    Converte números romanos em decimais e remove stopwords.
+    '''
     roman = limpa_utf8(roman)
     
     #remove stopwords
@@ -105,8 +115,13 @@ def roman2num(roman, stop_words, values={'m': 1000, 'd': 500, 'c': 100, 'l': 50,
     else:
         return str(numbers[0])
 
-#Reduz a dimensionalidade dos dados
 def SVD(dim,base_tfidf):
+    '''
+    Reduz a dimensionalidade dos dados de entrada. 
+    dim: número de dimensões desejada (int)
+    base_tfidf: base de dados a ter sua dimensionalidade reduzida
+    '''
+    
     print('Começou a redução de dimensionalidade.')
     t = time.time()
     svd = TruncatedSVD(n_components = dim, random_state = 42)
@@ -118,9 +133,10 @@ def SVD(dim,base_tfidf):
     return base_tfidf_reduced
 
 
-#Visualiza as cluster definidas pelo algoritmo. Além disso também retorna o número
-#de normas por cluster.
 def analisa_clusters(base_tfidf, id_clusters):
+    '''
+    Tenta visualizar as cluster definidas. Além disso retorna o número de normas por cluster.
+    '''
     
     clusters = np.unique(id_clusters)
     
@@ -143,8 +159,10 @@ def analisa_clusters(base_tfidf, id_clusters):
     
     return n_normas
 
-#Faz os stemming nas palavras utilizando o pacote NLTK com o RSLP Portuguese stemmer
 def stem(resolucoes):
+    '''
+    Faz o stemming nas palavras utilizando o pacote nltk com o RSLP Portuguese stemmer. 
+    '''
     
     print('Comecou a fazer o stemming.')
     t = time.time()
@@ -165,6 +183,9 @@ def stem(resolucoes):
     return res
 
 def mostra_conteudo_clusters(cluster,n_amostras,respostas,it_aux):
+    '''
+    Salva 'n_amostras' da cluster 'cluster' em um arquivo txt para facilitar a visualização. 
+    '''
     df = pd.read_csv(str(it_aux) + 'texto_respostas_por_cluster.csv', sep='|')
     a = df[df['cluster_id'] == cluster]
     
@@ -182,61 +203,45 @@ def mostra_conteudo_clusters(cluster,n_amostras,respostas,it_aux):
             
     fo.close()
     
-'''
-def generate_csvs_for_powerbi(analise, Z, perguntas_id, respostas, respostas_tratadas,it_aux):
-    
-    clusters = [i for i in range(1,len(analise)+1)]
-    
-    #Prepara a tabela que indica o número de perguntas por cluster
-    d={'pergunta_id':perguntas_id,'cluster_id':clusters,'numero_de_respostas':analise}
-    df = pd.DataFrame(d)
-    #exporta a tabela para um csv
-    df.to_csv('info_cluster.csv',sep='|',index=False,encoding='utf-8')
-    
-    
-    #adiciona as keywords de cada cluster no csv
-    palavras_relevantes = [mostra_palavras_relevantes(cluster,respostas_tratadas,10) for cluster in clusters]
-    df['Keywords'] = 'default'
-    for i in range(len(clusters)):
-        df.iloc[i,2] = palavras_relevantes[i]
-    df.to_csv('info_cluster.csv',sep='|',index=False,encoding='utf-8')
-    
-    #Prepara a tabela que tem a pergunta, o indentificador da pergunta
-    #e a qual cluster a pergunta pertence
-    Z['pergunta_sem_processamento'] = 'default'
-    Z['pergunta_com_processamento'] = 'default'
-    for i in range(Z.shape[0]):
-        id_pergunta = Z.iloc[i,1]
-        idx = Z.index[Z['resposta_id'] == id_pergunta].tolist()[0]
-        #Adiciona a pergunta sem processamento na coluna correspondente
-        Z.iloc[i,2] = respostas[idx]
-        #Adiciona a pergunta com processamento na coluna correspondente
-        Z.iloc[i,3] = respostas_tratadas[idx]
-        
-    Z.to_csv('texto_respostas_por_cluster.csv',sep='|',index=False,encoding='utf-8')
-'''
 
-def generate_csvs_for_powerbi(analise, Z, pergunta_id):
+def generate_csvs_for_powerbi(analise, it_aux, id_clusters, resposta_id, respostas):
+    '''
+    Gera os csvs que serão utilizados para a confecção de um painel no PowerBI. 
+    info_cluster.csv: contém a informação do código da cluster, a qual pergunta se refere e quantas respostas tem na cluster.
+    texto_respostas_por_cluster.csv: contém a informação 
+    '''
     
     clusters = [i for i in range(1,len(analise)+1)]
     
-    perguntas_id = [pergunta_id for i in range(1,len(analise)+1)]
+	perguntas_id = [it_aux]*len(analise)
     
     #Prepara a tabela que indica o número de perguntas por cluster
     d={'pergunta_id':perguntas_id,'cluster_id':clusters,'numero_de_respostas':analise}
-    df = pd.DataFrame(d)
+    df1 = pd.DataFrame(d)
     
     #abre o arquivo no modo "append" e salva o dataframe como um csv
-    with open('info_cluster', 'a') as f:
-        df.to_csv(f, sep='|',index=False,encoding='utf-8')
+    with open('info_cluster.csv', 'a') as f:
+        df1.to_csv(f, sep='|',index=False,encoding='utf-8')
     
+    f.close()
+	
+	
+    #Colocando em um dataframe que será convertido para um csv
+    d = {'pergunta_id':[it_aux]*len(id_clusters), 'cluster_id':id_clusters, 'resposta_id':resposta_id, 'resposta':respostas}
+    df2 = pd.DataFrame(d)
     
+    #abre o arquivo no modo "append" e salva o dataframe como um csv
+    with open('texto_respostas_por_cluster.csv', 'a') as f:
+        df2.to_csv(f, sep='|',index=False,encoding='utf-8')
     
-    
+    f.close()
     
     
     
 def generate_wordcloud(cluster,it_aux,stop_words):
+    '''
+    Gera uma nuvem de palavras de uma cluster 'cluster' referente a uma perunta 'it_aux'.
+    '''
     
     #importa o csv que tem a informação das clusters
     df = pd.read_csv('texto_respostas_por_cluster.csv', sep='|')
@@ -250,7 +255,6 @@ def generate_wordcloud(cluster,it_aux,stop_words):
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
     plt.show()
-    
     
     
     
