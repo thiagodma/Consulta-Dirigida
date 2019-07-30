@@ -5,8 +5,10 @@ import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from scipy.cluster import hierarchy
 
+#stopwords definidas
 stop_words = cdf.define_stop_words()
 
+#Lê a planilha 
 df = pd.read_excel('Consulta dirigida de Laboratórios Clínicos.xlsx',dtype=str).fillna('nao teve resposta')
 
 resposta_id = list(df['ID da resposta'])
@@ -20,6 +22,7 @@ while it < 58:
     respostas = list(df.iloc[:,it])
     resposta_id = list(df['ID da resposta'])
     
+    #Retira as respostas vazias
     respostas_aux = []
     respostas_tratadas_aux = []
     resposta_id_aux = []
@@ -28,7 +31,7 @@ while it < 58:
             respostas_aux.append(respostas[i])
             respostas_tratadas_aux.append(cdf.trata_respostas(respostas[i],stop_words))
             resposta_id_aux.append(resposta_id[i])
-    
+            
     respostas = respostas_aux
     respostas_tratadas = respostas_tratadas_aux
     resposta_id = resposta_id_aux
@@ -65,16 +68,10 @@ while it < 58:
     #Tentando visualizar os dados e vendo o número de amostras por cluster
     analise.append(cdf.analisa_clusters(base_tfidf, id_clusters))
     
-    #Colocando em dataframes
-    W = pd.DataFrame([it_aux]*len(id_clusters),columns=['pergunta_id']) #codigo da pergunta
-    X = pd.DataFrame(id_clusters,columns=['cluster_id']) #codigo da cluster
-    Y = pd.DataFrame(resposta_id ,columns=['resposta_id']) #codigo da resposta
-    Z = W.join(X)
-    Z = Z.join(Y)
     
-    print('Foram encontradas ' + str(max(Z['cluster_id'])) + ' clusters\n')
+    print('Foram encontradas ' + str(max(id_clusters)) + ' clusters\n')
     
     #Exporta as tabelas
-    cdf.generate_csvs_for_powerbi(analise[it_aux-1],Z,respostas,respostas_tratadas,it_aux)
+    cdf.generate_csvs_for_powerbi(analise[it_aux-1],it_aux, id_clusters, resposta_id, respostas)
     it = it+2
     it_aux = it_aux+1
