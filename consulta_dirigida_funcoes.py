@@ -5,7 +5,6 @@ import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
 from wordcloud import WordCloud
 
 
@@ -213,15 +212,15 @@ def generate_csvs_for_powerbi(analise, it_aux, id_clusters, resposta_id, respost
     
     clusters = [i for i in range(1,len(analise)+1)]
     
-	perguntas_id = [it_aux]*len(analise)
+    perguntas_id = [it_aux]*len(analise)
     
     #Prepara a tabela que indica o número de perguntas por cluster
     d={'pergunta_id':perguntas_id,'cluster_id':clusters,'numero_de_respostas':analise}
     df1 = pd.DataFrame(d)
     
     #abre o arquivo no modo "append" e salva o dataframe como um csv
-    with open('info_cluster.csv', 'a') as f:
-        df1.to_csv(f, sep='|',index=False,encoding='utf-8')
+    with open('info_cluster.csv', 'a', newline='') as f:
+        df1.to_csv(f, sep='|', index=False, encoding='utf-8', header=False)
     
     f.close()
 	
@@ -231,8 +230,8 @@ def generate_csvs_for_powerbi(analise, it_aux, id_clusters, resposta_id, respost
     df2 = pd.DataFrame(d)
     
     #abre o arquivo no modo "append" e salva o dataframe como um csv
-    with open('texto_respostas_por_cluster.csv', 'a') as f:
-        df2.to_csv(f, sep='|',index=False,encoding='utf-8')
+    with open('texto_respostas_por_cluster.csv', 'a', newline='') as f:
+        df2.to_csv(f, sep='|', index=False, encoding='utf-8', header = False)
     
     f.close()
     
