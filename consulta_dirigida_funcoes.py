@@ -193,14 +193,13 @@ def generate_csvs_for_powerbi(analise, Z, perguntas_id, respostas, respostas_tra
     #exporta a tabela para um csv
     df.to_csv('info_cluster.csv',sep='|',index=False,encoding='utf-8')
     
-    '''
+    
     #adiciona as keywords de cada cluster no csv
     palavras_relevantes = [mostra_palavras_relevantes(cluster,respostas_tratadas,10) for cluster in clusters]
     df['Keywords'] = 'default'
     for i in range(len(clusters)):
         df.iloc[i,2] = palavras_relevantes[i]
     df.to_csv('info_cluster.csv',sep='|',index=False,encoding='utf-8')
-    '''
     
     #Prepara a tabela que tem a pergunta, o indentificador da pergunta
     #e a qual cluster a pergunta pertence
@@ -217,12 +216,22 @@ def generate_csvs_for_powerbi(analise, Z, perguntas_id, respostas, respostas_tra
     Z.to_csv('texto_respostas_por_cluster.csv',sep='|',index=False,encoding='utf-8')
 '''
 
-def generate_csvs_for_powerbi(analise, Z):
+def generate_csvs_for_powerbi(analise, Z, pergunta_id):
     
+    clusters = [i for i in range(1,len(analise)+1)]
     
+    perguntas_id = [pergunta_id for i in range(1,len(analise)+1)]
     
+    #Prepara a tabela que indica o número de perguntas por cluster
+    d={'pergunta_id':perguntas_id,'cluster_id':clusters,'numero_de_respostas':analise}
+    df = pd.DataFrame(d)
+    
+    #abre o arquivo no modo "append" e salva o dataframe como um csv
     with open('info_cluster', 'a') as f:
-        df.to_csv(f, header=False)
+        df.to_csv(f, sep='|',index=False,encoding='utf-8')
+    
+    
+    
     
     
     
