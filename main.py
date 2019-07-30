@@ -81,5 +81,5 @@ while it <= 63:
 pergunta_id = [i for i in range(1,26)]
 d = {'pergunta_id':pergunta_id,'pergunta':perguntas}
 df1 = pd.DataFrame(d)
-df1.to_csv('codigos_perguntas.csv', sep='|', encoding='utf-8')
+df1.to_csv('codigos_perguntas.csv', sep='|', encoding='utf-8', index=False)
 
