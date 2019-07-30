@@ -13,10 +13,10 @@ df = pd.read_excel('Consulta dirigida de Laboratórios Clínicos.xlsx',dtype=str
 
 resposta_id = list(df['ID da resposta'])
 
-it=11 #indice da coluna que contém a resposta
+it=15 #indice da coluna que contém a resposta
 it_aux = 1 #será usado apenas para fazer referência às perguntas como primeira, segunda, terceira, etc
 analise = []
-while it <= 58:
+while it <= 63:
     
     #pega o primeiro conjunto de perguntas
     respostas = list(df.iloc[:,it])
