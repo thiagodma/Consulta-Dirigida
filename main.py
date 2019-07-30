@@ -11,6 +11,8 @@ stop_words = cdf.define_stop_words()
 #Lê a planilha 
 df = pd.read_excel('Consulta dirigida de Laboratórios Clínicos.xlsx',dtype=str).fillna('nao teve resposta')
 
+perguntas = [df.columns[i] for i in range(14,64,2)]
+
 resposta_id = list(df['ID da resposta'])
 
 it=15 #indice da coluna que contém a resposta
@@ -75,3 +77,9 @@ while it <= 63:
     cdf.generate_csvs_for_powerbi(analise[it_aux-1],it_aux, id_clusters, resposta_id, respostas)
     it = it+2
     it_aux = it_aux+1
+    
+pergunta_id = [i for i in range(1,26)]
+d = {'pergunta_id':pergunta_id,'pergunta':perguntas}
+df1 = pd.DataFrame(d)
+df1.to_csv('codigos_perguntas.csv', sep='|', encoding='utf-8')
+
