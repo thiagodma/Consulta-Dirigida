@@ -74,7 +74,7 @@ while it <= 63:
     print('Foram encontradas ' + str(max(id_clusters)) + ' clusters\n')
     
     #Exporta as tabelas
-    cdf.generate_csvs_for_powerbi(analise[it_aux-1],it_aux, id_clusters, resposta_id, respostas)
+    cdf.generate_csvs_for_powerbi(analise[it_aux-1],it_aux, id_clusters, resposta_id, respostas, respostas_tratadas)
     it = it+2
     it_aux = it_aux+1
     

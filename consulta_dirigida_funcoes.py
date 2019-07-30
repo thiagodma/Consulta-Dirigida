@@ -18,6 +18,7 @@ def define_stop_words():
     stop_words = stop_words + ['art','dou','secao','pag','pagina', 'in', 'inc', 'obs', 'sob', 'ltda']
     stop_words = stop_words + ['ndash', 'mdash', 'lsquo','rsquo','ldquo','rdquo','bull','hellip','prime','lsaquo','rsaquo','frasl', 'ordm']
     stop_words = stop_words + ['prezado', 'prezados', 'prezada', 'prezadas', 'gereg', 'ggali','usuario', 'usuaria', 'deseja','gostaria', 'boa tarde', 'bom dia', 'boa noite']
+    stop_words = stop_words + ['laboratorio','laboratorios','laboratorial','laboratoriais']
     stop_words = list(dict.fromkeys(stop_words))
     stop_words = ' '.join(stop_words)
     #As stop_words vem com acentos/cedilhas. Aqui eu tiro os caracteres indesejados
@@ -203,7 +204,7 @@ def mostra_conteudo_clusters(cluster,n_amostras,respostas,it_aux):
     fo.close()
     
 
-def generate_csvs_for_powerbi(analise, it_aux, id_clusters, resposta_id, respostas):
+def generate_csvs_for_powerbi(analise, it_aux, id_clusters, resposta_id, respostas, respostas_tratadas):
     '''
     Gera os csvs que serão utilizados para a confecção de um painel no PowerBI. 
     info_cluster.csv: contém a informação do código da cluster, a qual pergunta se refere e quantas respostas tem na cluster.
@@ -226,7 +227,7 @@ def generate_csvs_for_powerbi(analise, it_aux, id_clusters, resposta_id, respost
 	
 	
     #Colocando em um dataframe que será convertido para um csv
-    d = {'pergunta_id':[it_aux]*len(id_clusters), 'cluster_id':id_clusters, 'resposta_id':resposta_id, 'resposta':respostas}
+    d = {'pergunta_id':[it_aux]*len(id_clusters), 'cluster_id':id_clusters, 'resposta_id':resposta_id, 'resposta':respostas, 'resposta_tratada':respostas_tratadas}
     df2 = pd.DataFrame(d)
     
     #abre o arquivo no modo "append" e salva o dataframe como um csv
