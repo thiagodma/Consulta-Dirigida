@@ -4,6 +4,9 @@ Foi finalizada a abordagem clássica para fazer a clusterização dos textos. Fo
 
 Os resultados obtidos estão dispostos em três arquivos: info_cluster.csv, codigos_perguntas.csv e texto_respostas_por_cluster.csv.
 
+
 info_cluster.csv: arquivo que contém o código da pergunta, o código da cluster e o número de respostas na cluster.
+
 codigos_perguntas.csv: arquivo que contém o código da pergunta e a pergunta em si.
+
 texto_respostas_por_cluster.csv: arquivo que contém o código da pergunta, o código da cluster, o código da resposta, a resposta sem pré-processamento e a resposta com pré-processamento.
