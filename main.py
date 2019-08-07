@@ -9,7 +9,7 @@ from scipy.cluster import hierarchy
 stop_words = cdf.define_stop_words()
 
 #Lê a planilha 
-df = pd.read_excel('Consulta_dirigida_de_Laboratórios_Clínicos.xlsx',dtype=str).fillna('nao teve resposta')
+df = pd.read_excel('Consulta_dirigida_de_Laboratorios_Clinicos.xlsx',dtype=str).fillna('nao teve resposta')
 
 perguntas = [df.columns[i] for i in range(14,64,2)]
 
